@@ -151,6 +151,11 @@ add_resource <- function(package, resource_name, data, schema = NULL,
   # Check schema (also checks df)
   check_schema(schema, df)
 
+  # Order df according to schema
+  schema_name <- purrr::map_chr(schema$fields, ~ .x$name %||% NA_character_)
+  schema_name_available <- schema_name[schema_name%in% names(df)]
+  df <- df[,schema_name_available]
+
   # Check ellipsis
   if (...length() != length(...names())) {
     cli::cli_abort(

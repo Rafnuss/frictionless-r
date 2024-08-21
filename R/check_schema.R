@@ -54,12 +54,15 @@ check_schema <- function(schema, data = NULL) {
     )
   }
 
+  # Check required value
+  field_required <- purrr::map_chr(fields, ~ .x$constraints$required %||% NA)
+
   # Check data when present
   if (!is.null(data)) {
     check_data(data)
 
     col_names <- colnames(data)
-    if (!identical(field_names, col_names)) {
+    if (!all(col_names %in% field_names[field_required])) {
       cli::cli_abort(
         c(
           "Field names in {.arg schema} must match column names in {.arg data}.",
